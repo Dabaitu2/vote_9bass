@@ -6,10 +6,12 @@
             <el-col :span="8" class="padding" >
               <el-card shadow="hover" >
                 <div slot="header" class="clearfix" @click="handleClick(item)">
-                  <span>{{item.title}}</span>
+                  <el-tag v-if="item.status" type="success" size="small" style="float: left">进行中</el-tag>
+                  <el-tag v-if="!item.status" type="info" size="small" style="float:left;">已结束</el-tag>
+                  <span>{{item.voteTitle}}</span>
                 </div>
                 <div>
-                  <span>投票项目id: {{item.id}}</span>
+                  <span style="float: left">项目id</span><span>{{item.id}}</span>
                 </div>
               </el-card>
             </el-col>
@@ -21,135 +23,43 @@
 
 <script>
 
-    const MOCK_DATA = [
-      {
-        title: "测试投票数据1",
-        id: 1,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据2",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据3",
-        id: 3,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据4",
-        id: 4,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据5",
-        id: 5,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 1,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      },
-      {
-        title: "测试投票数据1",
-        id: 2,
-        userId: 'test_user_01'
-      }
-    ];
+  import axios from 'axios';
+  import {SERVER} from "../constants/config";
+  import store from '../store/store';
+  const instance = axios.create({
+    baseURL: SERVER,
+    timeout: 1000,
+  });
+
+
 
     export default {
         name: "",
         data() {
             return {
-              items: MOCK_DATA.slice(0)
+              items: []
             }
+        },
+        created() {
+            instance.post('/MyProjects', {
+                userId: store.state.userId
+            })
+              .then(rst=>{
+                if(rst.data.status === "success") {
+                  console.log(rst);
+                  const length = rst.data.rtr.length;
+                  for (let i=0; i< length; i++) {
+                     this.items.push({
+                       ...rst.data.rtr[i],
+                       status: new Date().getTime() <= rst.data.rtr[i].end
+                     });
+                  }
+                }
+              }).catch(e=>{
+                this.$message.warning('没有获取到数据!');
+                console.log(e);
+            })
+
         },
         methods: {
           handleClick(item) {

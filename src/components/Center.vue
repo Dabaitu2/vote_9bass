@@ -8,25 +8,39 @@
             class="el-menu-vertical-demo full"
             @open="handleOpen"
             @close="handleClose">
-            <el-menu-item index="1">
-              <i class="el-icon-menu"></i>
-                <span slot="title">
-                  <router-link to="/center/myVotes">
-                    我的投票
+
+                  <router-link to="/center/myVotes" class="route">
+                    <el-menu-item index="1">
+                      <i class="el-icon-menu"></i>
+                      <span slot="title">
+                        我的投票
+                        </span>
+                    </el-menu-item>
                   </router-link>
-                </span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-menu"></i>
-              <span slot="title">
-                <router-link to="/center/newVote">
-                    发起投票
+
+
+                <router-link to="/center/newVote" class="route">
+                  <el-menu-item index="2">
+                    <i class="el-icon-menu"></i>
+                    <span slot="title">
+                      发起投票
+                      </span>
+                  </el-menu-item>
                   </router-link>
-              </span>
-            </el-menu-item>
+
+            <router-link to="/center/history" class="route">
             <el-menu-item index="3">
               <i class="el-icon-document"></i>
               <span slot="title">历史信息</span>
+            </el-menu-item>
+            </router-link>
+
+
+            <el-menu-item index="4" @click="logout" style="position: absolute; bottom: 10vh; width: 100%">
+              <i class="el-icon-menu"></i>
+              <span slot="title">
+                      退出登录
+              </span>
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -40,6 +54,7 @@
 </template>
 
 <script>
+  import store from '../store/store'
     export default {
         name: "",
         data() {
@@ -51,6 +66,10 @@
           },
           handleClose(key, keyPath) {
             console.log(key, keyPath);
+          },
+          logout() {
+            store.clearLogin();
+            this.$router.replace('/login');
           }
         }
 
@@ -82,7 +101,11 @@
     height: 85vh;
     width: 90%;
     border-radius: 5px;
-    box-shadow: 0 0 6px #828282;
+    box-shadow: 0 0 8px #d6d6d6;
     background-color: white;
+  }
+  
+  .route {
+    text-decoration: none;
   }
 </style>
